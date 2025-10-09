@@ -1,382 +1,242 @@
--- Trial Steal a brainrot - Halloween Event GUI
--- Created for Roblox
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Free Key - Zamas X Lennon | Halloween</title>
+  <style>
+    :root{
+      --bg:#090b14; --fg:#f6f7ff; --accent:#ff6a00; --purple:#8a2be2; --glass:rgba(255,255,255,.08); --edge:rgba(255,255,255,.25);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{background:radial-gradient(1200px 600px at 70% 10%, #0f1733 0%, #090b14 55%, #06070d 100%);color:var(--fg);font-family:system-ui,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;overflow:hidden}
 
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
+    /* LAYERS */
+    .layer{position:fixed;inset:0;pointer-events:none}
+    .stars{z-index:0;background-image:radial-gradient(2px 2px at 20% 30%, #a7b8ff 40%, transparent 41%),radial-gradient(1.5px 1.5px at 70% 20%, #fff 40%, transparent 41%),radial-gradient(1px 1px at 40% 70%, #a7c4ff 40%, transparent 41%),radial-gradient(1px 1px at 90% 50%, #fff 40%, transparent 41%),radial-gradient(1.2px 1.2px at 10% 80%, #dbe6ff 40%, transparent 41%),radial-gradient(1.3px 1.3px at 55% 60%, #fff 40%, transparent 41%);animation:twinkle 6s linear infinite}
+    @keyframes twinkle{50%{filter:brightness(1.3)}}
+    .rain{z-index:2;overflow:hidden}
+    .lightning{z-index:3;background:linear-gradient(180deg,rgba(255,255,255,0.0),rgba(255,255,255,0.18) 45%,rgba(255,255,255,0));mix-blend-mode:screen;opacity:0;transition:opacity .2s ease}
+    .lightning.flash{opacity:1}
 
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+    /* RAIN */
+    .raindrop{position:absolute;width:2px;height:22vh;background:linear-gradient(to bottom,rgba(255,255,255,.0),rgba(180,220,255,.9));top:-24vh;animation:fall linear infinite}
+    @keyframes fall{to{transform:translateY(140vh) translateX(var(--drift,0px))}}
 
--- Create ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "TrialStealHalloweenGUI"
-screenGui.ResetOnSpawn = false
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-screenGui.Parent = playerGui
+    /* HORIZON */
+    .horizon{position:fixed;left:0;right:0;bottom:-2vh;height:36vh;pointer-events:none;z-index:1}
+    .horizon svg{width:140%;height:100%;transform:translateX(-10%)}
 
--- Main Frame
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 300, 0, 380)
-mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 0, 40)
-mainFrame.BorderSizePixel = 0
-mainFrame.Parent = screenGui
+    /* WITCH & GHOST */
+    .witch{position:fixed;top:16vh;left:-22vw;width:min(24vw,300px);aspect-ratio:2/1;background:conic-gradient(from 90deg at 60% 50%,transparent 0 88%,rgba(0,0,0,.75) 88% 100%);clip-path:polygon(0% 55%,45% 45%,75% 55%,100% 50%,75% 65%,45% 55%);filter:drop-shadow(0 0 18px rgba(138,43,226,.55));transform:scaleX(-1) rotate(-4deg);animation:fly 16s linear infinite;z-index:2}
+    .witch::after{content:"";position:absolute;inset:30% 70% 40% 5%;background:radial-gradient(circle at 20% 50%,#000 0 42%,transparent 43%);border-radius:50%}
+    @keyframes fly{to{transform:translateX(150vw) translateY(0) scaleX(-1) rotate(6deg)}}
+    .ghost{position:fixed;right:-12vw;bottom:22vh;width:min(18vw,240px);aspect-ratio:3/4;background:radial-gradient(60% 50% at 50% 30%,#ffffffcc 0%,#ffffff55 60%,transparent 61%),radial-gradient(70% 60% at 50% 80%,#ffffff90 0%,#ffffff30 60%,transparent 61%);border-radius:60% 60% 40% 40%/50% 50% 45% 45%;animation:drift 12s ease-in-out infinite alternate;z-index:1}
+    @keyframes drift{to{transform:translateX(-120vw) translateY(-6vh)}}
 
--- Main Frame Corner
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 20)
-mainCorner.Parent = mainFrame
+    /* PUMPKINS */
+    .pumpkins{position:fixed;bottom:6vh;left:0;right:0;display:flex;justify-content:space-around;gap:2vw;pointer-events:none;z-index:1}
+    .pumpkin{position:relative;width:min(12vw,120px);aspect-ratio:1/.8;background:radial-gradient(120% 90% at 50% 60%,#ff9d2e 0%,#ef5a00 55%,#7a2c00 100%);border-radius:50%/58%;box-shadow:0 0 14px rgba(255,106,0,.8),0 0 36px rgba(255,106,0,.35);animation:f 4.8s ease-in-out infinite}
+    @keyframes f{50%{transform:translateY(-6px)}}
+    .stem{position:absolute;top:-8%;left:47%;width:8%;height:14%;background:linear-gradient(#3a8f23,#1d4b12);border-radius:20% 20% 60% 60%/30% 30% 70% 70%;transform:rotate(-12deg)}
+    .face{position:absolute;inset:0;display:grid;place-items:center;filter:drop-shadow(0 0 8px #ffa600)}
+    .glow{fill:#ffdb7a}
 
--- Main Frame Border
-local mainStroke = Instance.new("UIStroke")
-mainStroke.Color = Color3.fromRGB(255, 107, 0)
-mainStroke.Thickness = 3
-mainStroke.Parent = mainFrame
+    /* UI */
+    .topbar{position:fixed;left:0;right:0;top:0;height:54px;display:flex;align-items:center;gap:10px;padding:0 10px;z-index:7}
+    .hamburger{appearance:none;border:none;background:rgba(255,255,255,.1);border:1px solid var(--edge);color:var(--fg);width:46px;height:42px;border-radius:12px;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+    .hamburger span{display:block;width:22px;height:2px;background:currentColor;box-shadow:0 6px 0 0 currentColor, 0 -6px 0 0 currentColor}
 
--- Glow Effect
-local glowEffect = Instance.new("ImageLabel")
-glowEffect.Name = "Glow"
-glowEffect.Size = UDim2.new(1, 50, 1, 50)
-glowEffect.Position = UDim2.new(0, -25, 0, -25)
-glowEffect.BackgroundTransparency = 1
-glowEffect.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-glowEffect.ImageColor3 = Color3.fromRGB(255, 107, 0)
-glowEffect.ImageTransparency = 0.7
-glowEffect.ScaleType = Enum.ScaleType.Slice
-glowEffect.SliceCenter = Rect.new(10, 10, 90, 90)
-glowEffect.ZIndex = 0
-glowEffect.Parent = mainFrame
+    .center{position:fixed;inset:0;display:grid;place-items:center;padding:4vmin;z-index:5}
+    .card{position:relative;width:min(92vw,720px);max-width:720px;backdrop-filter:blur(12px) saturate(120%);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.06));border:1px solid var(--edge);border-radius:28px;padding:24px clamp(18px,4vmin,36px);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+    .title{font-size:clamp(22px,3.6vmin,34px);margin:0 0 12px;text-shadow:0 0 12px rgba(255,106,0,.85),0 0 36px rgba(255,106,0,.35)}
+    .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .btn{appearance:none;border:none;border-radius:14px;padding:12px 16px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:#1a0c00;background:linear-gradient(180deg,#ffb15a,#ff6a00);box-shadow:0 0 12px rgba(255,106,0,.85),0 0 36px rgba(255,106,0,.35)}
+    .btn:active{transform:translateY(1px) scale(.99)}
+    .btn[disabled]{filter:grayscale(.6) brightness(.8);cursor:not-allowed;box-shadow:none}
+    .copy{background:linear-gradient(180deg,#cdb7ff,#8a2be2);color:#0b0214;box-shadow:0 0 14px rgba(138,43,226,.6)}
 
--- Title Label
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Name = "TitleLabel"
-titleLabel.Size = UDim2.new(1, 0, 0, 45)
-titleLabel.Position = UDim2.new(0, 0, 0, 10)
-titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "👻 TRIAL STEAL 👻"
-titleLabel.TextColor3 = Color3.fromRGB(255, 107, 0)
-titleLabel.TextSize = 24
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.TextStrokeTransparency = 0
-titleLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-titleLabel.Parent = mainFrame
+    .key-box{display:flex;align-items:center;gap:10px;margin-top:12px;width:100%}
+    .key-canvas{display:block;flex:1 1 auto;min-width:0;height:54px;border-radius:14px;border:1px dashed rgba(255,255,255,.3);background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 12px,rgba(255,255,255,.03) 12px 24px),linear-gradient(180deg,rgba(0,0,0,.25),rgba(255,255,255,.04));box-shadow:inset 0 0 24px rgba(0,0,0,.55)}
+    .copykey{flex:0 0 auto}
 
--- Subtitle Label
-local subtitleLabel = Instance.new("TextLabel")
-subtitleLabel.Name = "SubtitleLabel"
-subtitleLabel.Size = UDim2.new(1, 0, 0, 22)
-subtitleLabel.Position = UDim2.new(0, 0, 0, 55)
-subtitleLabel.BackgroundTransparency = 1
-subtitleLabel.Text = "a brainrot"
-subtitleLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
-subtitleLabel.TextSize = 14
-subtitleLabel.Font = Enum.Font.GothamBold
-subtitleLabel.Parent = mainFrame
+    /* Sidebar (OFFCANVAS) */
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:min(80vw,320px);backdrop-filter:blur(10px);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));border-right:1px solid var(--edge);padding:18px 16px;z-index:6;display:flex;flex-direction:column;gap:12px;transform:translateX(-100%);transition:transform .25s ease}
+    .sidebar.open{transform:translateX(0)}
+    .sb-title{font-weight:900;letter-spacing:.6px;font-size:18px;margin:0 0 8px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .input{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:var(--fg);padding:10px 12px;border-radius:12px;outline:none}
+    .login{margin-top:6px}
 
--- Event Label
-local eventLabel = Instance.new("TextLabel")
-eventLabel.Name = "EventLabel"
-eventLabel.Size = UDim2.new(1, 0, 0, 28)
-eventLabel.Position = UDim2.new(0, 0, 0, 77)
-eventLabel.BackgroundTransparency = 1
-eventLabel.Text = "🎃 Halloween Event 🎃"
-eventLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
-eventLabel.TextSize = 16
-eventLabel.Font = Enum.Font.GothamBold
-eventLabel.TextStrokeTransparency = 0.5
-eventLabel.Parent = mainFrame
+    /* RESPONSIVE */
+    @media (max-width: 768px){
+      .card{width:94vw;padding:18px}
+      .key-canvas{height:50px}
+    }
+    @media (orientation:landscape) and (max-height: 500px){
+      .center{align-items:flex-start;padding-top:64px}
+      .card{width:82vw}
+    }
+    @media (min-width: 1024px){
+      .card{width:min(70vw,720px)}
+    }
+  </style>
+</head>
+<body>
+  <!-- TOP BAR / HAMBURGER -->
+  <div class="topbar">
+    <button id="menuBtn" class="hamburger" aria-label="Abrir menú">
+      <span></span>
+    </button>
+  </div>
 
--- Spider Decoration 1
-local spider1 = Instance.new("TextLabel")
-spider1.Size = UDim2.new(0, 40, 0, 40)
-spider1.Position = UDim2.new(0, 20, 0, 20)
-spider1.BackgroundTransparency = 1
-spider1.Text = "🕷️"
-spider1.TextSize = 30
-spider1.Parent = mainFrame
+  <!-- BACKGROUND -->
+  <div class="layer stars"></div>
+  <div class="layer lightning" id="lightning"></div>
+  <div class="layer rain" id="rain"></div>
 
--- Spider Decoration 2
-local spider2 = Instance.new("TextLabel")
-spider2.Size = UDim2.new(0, 40, 0, 40)
-spider2.Position = UDim2.new(1, -60, 0, 20)
-spider2.BackgroundTransparency = 1
-spider2.Text = "🕸️"
-spider2.TextSize = 30
-spider2.Parent = mainFrame
+  <!-- HOUSES -->
+  <div class="horizon">
+    <svg viewBox="0 0 1200 300" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="houseShade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0b0e19"/>
+          <stop offset="100%" stop-color="#05070e"/>
+        </linearGradient>
+        <radialGradient id="windowGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffde8a"/>
+          <stop offset="100%" stop-color="#ff9c1a"/>
+        </radialGradient>
+      </defs>
+      <g fill="url(#houseShade)">
+        <path d="M0 260 L80 260 L80 210 L120 210 L120 260 L220 260 L220 170 L260 170 L260 260 L320 260 L320 190 L370 150 L420 190 L420 260 L520 260 L520 145 L560 145 L560 260 L640 260 L700 210 L760 260 L920 260 L920 190 L980 150 L1040 190 L1040 260 L1200 260 L1200 300 L0 300 Z"/>
+        <rect x="110" y="222" width="10" height="16" fill="url(#windowGlow)" opacity=".8"/>
+        <rect x="340" y="205" width="12" height="18" fill="url(#windowGlow)" opacity=".8"/>
+        <rect x="610" y="210" width="10" height="16" fill="url(#windowGlow)" opacity=".8"/>
+        <rect x="860" y="214" width="12" height="18" fill="url(#windowGlow)" opacity=".8"/>
+      </g>
+    </svg>
+  </div>
 
--- Web Decoration 1
-local web1 = Instance.new("TextLabel")
-web1.Size = UDim2.new(0, 50, 0, 50)
-web1.Position = UDim2.new(0, 10, 1, -60)
-web1.BackgroundTransparency = 1
-web1.Text = "🕸️"
-web1.TextSize = 40
-web1.TextTransparency = 0.3
-web1.Parent = mainFrame
+  <!-- WITCH / GHOST / PUMPKINS -->
+  <div class="witch"></div>
+  <div class="ghost"></div>
+  <div class="pumpkins" aria-hidden="true">
+    <div class="pumpkin"><div class="stem"></div><svg class="face" viewBox="0 0 100 80"><polygon class="glow" points="20,30 35,20 35,40"/><polygon class="glow" points="80,30 65,20 65,40"/><path class="glow" d="M20,60 Q50,30 80,60 L20,60 Z"/></svg></div>
+    <div class="pumpkin" style="animation-delay:1s"><div class="stem"></div><svg class="face" viewBox="0 0 100 80"><circle class="glow" cx="30" cy="30" r="8"/><circle class="glow" cx="70" cy="30" r="8"/><path class="glow" d="M20,55 Q50,70 80,55 L20,55 Z"/></svg></div>
+    <div class="pumpkin" style="animation-delay:2s"><div class="stem"></div><svg class="face" viewBox="0 0 100 80"><polygon class="glow" points="25,28 35,18 35,38"/><polygon class="glow" points="75,28 65,18 65,38"/><rect class="glow" x="35" y="52" width="30" height="8" rx="2"/></svg></div>
+  </div>
 
--- Web Decoration 2
-local web2 = Instance.new("TextLabel")
-web2.Size = UDim2.new(0, 50, 0, 50)
-web2.Position = UDim2.new(1, -60, 1, -60)
-web2.BackgroundTransparency = 1
-web2.Text = "🕷️"
-web2.TextSize = 40
-web2.TextTransparency = 0.3
-web2.Parent = mainFrame
+  <!-- SIDEBAR (OFF by default) -->
+  <aside id="sidebar" class="sidebar" aria-hidden="true">
+    <h2 class="sb-title">ONLY PREMIUM</h2>
+    <label class="field">
+      <span>Usuario</span>
+      <input class="input" type="text" placeholder="username" autocomplete="username">
+    </label>
+    <label class="field">
+      <span>Contraseña</span>
+      <input class="input" type="password" placeholder="••••••••" autocomplete="current-password">
+    </label>
+    <button class="btn login">Login</button>
+  </aside>
 
--- Key Input Frame
-local inputFrame = Instance.new("Frame")
-inputFrame.Name = "InputFrame"
-inputFrame.Size = UDim2.new(0, 260, 0, 45)
-inputFrame.Position = UDim2.new(0.5, -130, 0, 125)
-inputFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-inputFrame.BackgroundTransparency = 0.4
-inputFrame.BorderSizePixel = 0
-inputFrame.Parent = mainFrame
+  <!-- CENTER PANEL -->
+  <main class="center">
+    <section class="card" role="dialog" aria-labelledby="t">
+      <h1 class="title" id="t">Free Key - Zamas X Lennon</h1>
+      <div class="row">
+        <button id="gen" class="btn">Generate Key</button>
+      </div>
+      <div class="key-box">
+        <canvas id="keyCanvas" class="key-canvas" height="64" aria-label="Clave"></canvas>
+        <button id="copyGo" class="btn copy copykey" disabled>COPY KEY</button>
+      </div>
+    </section>
+  </main>
 
-local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 12)
-inputCorner.Parent = inputFrame
+  <script>
+    // RAIN
+    (function makeRain(){
+      const rain = document.getElementById('rain');
+      const drops = Math.min(220, Math.floor(window.innerWidth/6));
+      for(let i=0;i<drops;i++){
+        const d=document.createElement('div');d.className='raindrop';
+        d.style.left=(Math.random()*100)+'vw';
+        d.style.animationDelay=(Math.random()*3)+'s';
+        d.style.animationDuration=(1.6+Math.random()*1.8)+'s';
+        d.style.setProperty('--drift', (Math.random()*24-12)+'px');
+        rain.appendChild(d);
+      }
+    })();
 
-local inputStroke = Instance.new("UIStroke")
-inputStroke.Color = Color3.fromRGB(255, 107, 0)
-inputStroke.Thickness = 2
-inputStroke.Parent = inputFrame
+    // LIGHTNING
+    (function lightningLoop(){
+      const layer=document.getElementById('lightning');
+      const flash=()=>{layer.classList.add('flash');setTimeout(()=>layer.classList.remove('flash'),160)};
+      const schedule=()=>setTimeout(()=>{flash();schedule()}, 2200+Math.random()*4200);
+      schedule();
+    })();
 
--- Key TextBox
-local keyInput = Instance.new("TextBox")
-keyInput.Name = "KeyInput"
-keyInput.Size = UDim2.new(1, -20, 1, -20)
-keyInput.Position = UDim2.new(0, 10, 0, 10)
-keyInput.BackgroundTransparency = 1
-keyInput.Text = ""
-keyInput.PlaceholderText = "Enter Key Here..."
-keyInput.TextColor3 = Color3.fromRGB(0, 255, 0)
-keyInput.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-keyInput.TextSize = 14
-keyInput.Font = Enum.Font.Code
-keyInput.TextXAlignment = Enum.TextXAlignment.Center
-keyInput.ClearTextOnFocus = false
-keyInput.Parent = inputFrame
+    // KEY RENDER
+    const canvas=document.getElementById('keyCanvas');
+    const ctx=canvas.getContext('2d');
+    let currentKey='';
 
--- Submit Button
-local submitButton = Instance.new("TextButton")
-submitButton.Name = "SubmitButton"
-submitButton.Size = UDim2.new(0, 260, 0, 42)
-submitButton.Position = UDim2.new(0.5, -130, 0, 190)
-submitButton.BackgroundColor3 = Color3.fromRGB(255, 107, 0)
-submitButton.BorderSizePixel = 0
-submitButton.Text = "🎃 SUBMIT 🎃"
-submitButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-submitButton.TextSize = 18
-submitButton.Font = Enum.Font.GothamBold
-submitButton.Parent = mainFrame
+    function draw(text){
+      const cssW=canvas.clientWidth, cssH=canvas.clientHeight; const dpr=Math.min(2, window.devicePixelRatio||1);
+      canvas.width=cssW*dpr; canvas.height=cssH*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      const grad=ctx.createLinearGradient(0,0,cssW,cssH); grad.addColorStop(0,'rgba(255,255,255,.08)'); grad.addColorStop(1,'rgba(255,255,255,.02)');
+      ctx.fillStyle=grad; ctx.fillRect(0,0,cssW,cssH);
+      ctx.font='800 26px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.shadowColor='rgba(255,106,0,.85)'; ctx.shadowBlur=14; ctx.fillStyle='#ffe9c0';
+      ctx.fillText(text||'— — — —  Presiona "Generate Key"  — — — —', cssW/2, cssH/2);
+    }
+    draw('');
 
-local submitCorner = Instance.new("UICorner")
-submitCorner.CornerRadius = UDim.new(0, 12)
-submitCorner.Parent = submitButton
+    function randomKey(){
+      const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const b=n=>Array.from({length:n},()=>A[Math.floor(Math.random()*A.length)]).join('');
+      return `${b(4)}-${b(4)}-${b(4)}-${b(4)}`;
+    }
 
-local submitStroke = Instance.new("UIStroke")
-submitStroke.Color = Color3.fromRGB(255, 140, 0)
-submitStroke.Thickness = 2
-submitStroke.Parent = submitButton
+    const genBtn=document.getElementById('gen');
+    const copyGoBtn=document.getElementById('copyGo');
+    const ROBLOX_URL='https://www.roblox.com/share?code=699ac3f589290c479b279f3241162fb4&type=Server';
 
--- Get Key Button
-local getKeyButton = Instance.new("TextButton")
-getKeyButton.Name = "GetKeyButton"
-getKeyButton.Size = UDim2.new(0, 260, 0, 42)
-getKeyButton.Position = UDim2.new(0.5, -130, 0, 247)
-getKeyButton.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
-getKeyButton.BorderSizePixel = 0
-getKeyButton.Text = "👻 GET KEY 👻"
-getKeyButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-getKeyButton.TextSize = 18
-getKeyButton.Font = Enum.Font.GothamBold
-getKeyButton.Parent = mainFrame
+    genBtn.addEventListener('click',()=>{
+      currentKey=randomKey();
+      draw(currentKey);
+      copyGoBtn.disabled=false;
+      genBtn.textContent='Generada ✓';
+    });
 
-local getKeyCorner = Instance.new("UICorner")
-getKeyCorner.CornerRadius = UDim.new(0, 12)
-getKeyCorner.Parent = getKeyButton
+    async function copyText(text){
+      try{ await navigator.clipboard.writeText(text); return true; }
+      catch(e){
+        const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+        try{document.execCommand('copy');}catch(e2){} finally{document.body.removeChild(ta)}
+        return true;
+      }
+    }
 
-local getKeyStroke = Instance.new("UIStroke")
-getKeyStroke.Color = Color3.fromRGB(255, 165, 0)
-getKeyStroke.Thickness = 2
-getKeyStroke.Parent = getKeyButton
+    copyGoBtn.addEventListener('click', async ()=>{
+      if(!currentKey) return;
+      await copyText(currentKey);
+      // Redirect (same tab) -> reduce 400 from blocked popups
+      window.location.href = ROBLOX_URL;
+    });
 
--- Close Button
-local closeButton = Instance.new("TextButton")
-closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.new(0, 40, 0, 40)
-closeButton.Position = UDim2.new(1, -50, 0, 10)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-closeButton.BorderSizePixel = 0
-closeButton.Text = "✕"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextSize = 24
-closeButton.Font = Enum.Font.GothamBold
-closeButton.Parent = mainFrame
+    // Keep crisp on resize
+    window.addEventListener('resize',()=>draw(currentKey));
 
-local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 8)
-closeCorner.Parent = closeButton
-
--- Premium Badge
-local premiumBadge = Instance.new("TextLabel")
-premiumBadge.Name = "PremiumBadge"
-premiumBadge.Size = UDim2.new(0, 260, 0, 28)
-premiumBadge.Position = UDim2.new(0.5, -130, 0, 302)
-premiumBadge.BackgroundTransparency = 1
-premiumBadge.Text = "⭐ ONLY PREMIUM USERS ⭐"
-premiumBadge.TextColor3 = Color3.fromRGB(255, 215, 0)
-premiumBadge.TextSize = 13
-premiumBadge.Font = Enum.Font.GothamBold
-premiumBadge.TextStrokeTransparency = 0.5
-premiumBadge.Parent = mainFrame
-
--- Credits
-local creditsLabel = Instance.new("TextLabel")
-creditsLabel.Name = "CreditsLabel"
-creditsLabel.Size = UDim2.new(1, 0, 0, 22)
-creditsLabel.Position = UDim2.new(0, 0, 1, -27)
-creditsLabel.BackgroundTransparency = 1
-creditsLabel.Text = "🕸️ Halloween Special Edition 🕸️"
-creditsLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-creditsLabel.TextSize = 11
-creditsLabel.Font = Enum.Font.Gotham
-creditsLabel.Parent = mainFrame
-
--- Toast Notification
-local toastFrame = Instance.new("Frame")
-toastFrame.Name = "ToastFrame"
-toastFrame.Size = UDim2.new(0, 400, 0, 60)
-toastFrame.Position = UDim2.new(0.5, -200, 0, -100)
-toastFrame.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-toastFrame.BorderSizePixel = 0
-toastFrame.Visible = false
-toastFrame.Parent = screenGui
-
-local toastCorner = Instance.new("UICorner")
-toastCorner.CornerRadius = UDim.new(0, 12)
-toastCorner.Parent = toastFrame
-
-local toastStroke = Instance.new("UIStroke")
-toastStroke.Color = Color3.fromRGB(0, 255, 0)
-toastStroke.Thickness = 2
-toastStroke.Parent = toastFrame
-
-local toastLabel = Instance.new("TextLabel")
-toastLabel.Size = UDim2.new(1, -20, 1, 0)
-toastLabel.Position = UDim2.new(0, 10, 0, 0)
-toastLabel.BackgroundTransparency = 1
-toastLabel.Text = "✅ Key link copied to clipboard!"
-toastLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-toastLabel.TextSize = 20
-toastLabel.Font = Enum.Font.GothamBold
-toastLabel.TextXAlignment = Enum.TextXAlignment.Center
-toastLabel.Parent = toastFrame
-
--- Make GUI Draggable (REMOVED - GUI is now fixed in position)
-
--- Button Animations
-local function animateButton(button, hoverColor, normalColor)
-	button.MouseEnter:Connect(function()
-		local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = hoverColor})
-		tween:Play()
-	end)
-	
-	button.MouseLeave:Connect(function()
-		local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = normalColor})
-		tween:Play()
-	end)
-end
-
-animateButton(submitButton, Color3.fromRGB(255, 140, 0), Color3.fromRGB(255, 107, 0))
-animateButton(getKeyButton, Color3.fromRGB(255, 165, 0), Color3.fromRGB(255, 140, 0))
-animateButton(closeButton, Color3.fromRGB(255, 50, 50), Color3.fromRGB(255, 0, 0))
-
--- Spider Animation
-local function animateSpider(spider)
-	spawn(function()
-		while wait(3) do
-			local tween = TweenService:Create(spider, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Rotation = 15})
-			tween:Play()
-			wait(2)
-			local tween2 = TweenService:Create(spider, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Rotation = -15})
-			tween2:Play()
-		end
-	end)
-end
-
-animateSpider(spider1)
-animateSpider(spider2)
-
--- Toast Function
-local function showToast()
-	toastFrame.Visible = true
-	toastFrame.Position = UDim2.new(0.5, -200, 0, -100)
-	
-	local tweenIn = TweenService:Create(toastFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -200, 0, 20)})
-	tweenIn:Play()
-	
-	wait(3)
-	
-	local tweenOut = TweenService:Create(toastFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.new(0.5, -200, 0, -100)})
-	tweenOut:Play()
-	
-	wait(0.5)
-	toastFrame.Visible = false
-end
-
--- Button Functions
-submitButton.MouseButton1Click:Connect(function()
-	local key = keyInput.Text
-	
-	if key ~= "" then
-		-- Add your key validation logic here
-		print("Submitted Key: " .. key)
-		
-		-- Example validation
-		local toastTemp = toastFrame:Clone()
-		toastTemp.Parent = screenGui
-		local label = toastTemp:FindFirstChildOfClass("TextLabel")
-		label.Text = "🎃 Validating key..."
-		label.TextColor3 = Color3.fromRGB(255, 165, 0)
-		toastTemp.BackgroundColor3 = Color3.fromRGB(255, 107, 0)
-		toastTemp.Visible = true
-		toastTemp.Position = UDim2.new(0.5, -200, 0, 20)
-		
-		wait(2)
-		toastTemp:Destroy()
-	else
-		local toastTemp = toastFrame:Clone()
-		toastTemp.Parent = screenGui
-		local label = toastTemp:FindFirstChildOfClass("TextLabel")
-		label.Text = "⚠️ Please enter a key!"
-		label.TextColor3 = Color3.fromRGB(255, 255, 255)
-		toastTemp.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-		toastTemp.Visible = true
-		toastTemp.Position = UDim2.new(0.5, -200, 0, 20)
-		
-		wait(2)
-		toastTemp:Destroy()
-	end
-end)
-
-getKeyButton.MouseButton1Click:Connect(function()
-	setclipboard("https://zamasxmodder.github.io/WEBLENONXZAMASV2HALLOWEEN/")
-	showToast()
-end)
-
-closeButton.MouseButton1Click:Connect(function()
-	screenGui:Destroy()
-end)
-
--- Entrance Animation
-mainFrame.Position = UDim2.new(0.5, 0, -1, 0)
-local entranceTween = TweenService:Create(mainFrame, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, 0, 0.5, 0)})
-entranceTween:Play()
-
-print("👻 Trial Steal Halloween GUI Loaded! 🎃")
+    // SIDEBAR TOGGLE
+    const sidebar=document.getElementById('sidebar');
+    const menuBtn=document.getElementById('menuBtn');
+    menuBtn.addEventListener('click',()=>{
+      const open = sidebar.classList.toggle('open');
+      sidebar.setAttribute('aria-hidden', String(!open));
+    });
+  </script>
+</body>
+</html>
