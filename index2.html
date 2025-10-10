@@ -69,29 +69,41 @@
     .input{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:var(--fg);padding:10px 12px;border-radius:12px;outline:none}
     .login{margin-top:6px}
 
-    /* TOAST */
-    #toast{
-      position:fixed;
-      bottom:5%;
-      left:50%;
-      transform:translateX(-50%);
-      background: #ff073a;
-      color: #fff;
-      font-weight: 700;
-      padding: 14px 24px;
+    /* TOAST NOTIFICATION */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #ff0000, #ff4d4d);
+      color: white;
+      padding: 16px 24px;
       border-radius: 12px;
-      box-shadow: 0 0 16px #ff073a, 0 0 32px #ff073a88;
-      font-family:system-ui, sans-serif;
-      opacity:0;
-      pointer-events:none;
-      z-index:10;
-      transition: opacity 0.3s ease;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.7), 0 0 40px rgba(255, 0, 0, 0.5);
+      z-index: 100;
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-align: center;
+      max-width: 90%;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     /* RESPONSIVE */
     @media (max-width: 768px){
       .card{width:94vw;padding:18px}
       .key-canvas{height:50px}
+      .toast {
+        padding: 12px 20px;
+        font-size: 14px;
+      }
     }
     @media (orientation:landscape) and (max-height: 500px){
       .center{align-items:flex-start;padding-top:64px}
@@ -147,6 +159,9 @@
     <div class="pumpkin" style="animation-delay:2s"><div class="stem"></div><svg class="face" viewBox="0 0 100 80"><polygon class="glow" points="25,28 35,18 35,38"/><polygon class="glow" points="75,28 65,18 65,38"/><rect class="glow" x="35" y="52" width="30" height="8" rx="2"/></svg></div>
   </div>
 
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast" aria-live="polite"></div>
+
   <!-- SIDEBAR (OFF by default) -->
   <aside id="sidebar" class="sidebar" aria-hidden="true">
     <h2 class="sb-title">ONLY PREMIUM</h2>
@@ -175,9 +190,6 @@
     </section>
   </main>
 
-  <!-- TOAST -->
-  <div id="toast">¡Será dirigido a Roblox para registrarlo!</div>
-
   <script>
     // RAIN
     (function makeRain(){
@@ -189,4 +201,95 @@
         d.style.animationDelay=(Math.random()*3)+'s';
         d.style.animationDuration=(1.6+Math.random()*1.8)+'s';
         d.style.setProperty('--drift', (Math.random()*24-12)+'px');
-        rain
+        rain.appendChild(d);
+      }
+    })();
+
+    // LIGHTNING
+    (function lightningLoop(){
+      const layer=document.getElementById('lightning');
+      const flash=()=>{layer.classList.add('flash');setTimeout(()=>layer.classList.remove('flash'),160)};
+      const schedule=()=>setTimeout(()=>{flash();schedule()}, 2200+Math.random()*4200);
+      schedule();
+    })();
+
+    // KEY RENDER
+    const canvas=document.getElementById('keyCanvas');
+    const ctx=canvas.getContext('2d');
+    let currentKey='';
+
+    function draw(text){
+      const cssW=canvas.clientWidth, cssH=canvas.clientHeight; const dpr=Math.min(2, window.devicePixelRatio||1);
+      canvas.width=cssW*dpr; canvas.height=cssH*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      const grad=ctx.createLinearGradient(0,0,cssW,cssH); grad.addColorStop(0,'rgba(255,255,255,.08)'); grad.addColorStop(1,'rgba(255,255,255,.02)');
+      ctx.fillStyle=grad; ctx.fillRect(0,0,cssW,cssH);
+      ctx.font='800 26px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.shadowColor='rgba(255,106,0,.85)'; ctx.shadowBlur=14; ctx.fillStyle='#ffe9c0';
+      ctx.fillText(text||'— — — —  Presiona "Generate Key"  — — — —', cssW/2, cssH/2);
+    }
+    draw('');
+
+    function randomKey(){
+      const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const b=n=>Array.from({length:n},()=>A[Math.floor(Math.random()*A.length)]).join('');
+      return `${b(4)}-${b(4)}-${b(4)}-${b(4)}`;
+    }
+
+    const genBtn=document.getElementById('gen');
+    const copyGoBtn=document.getElementById('copyGo');
+    const ROBLOX_URL= 'https://www.roblox.com/share?code=5010f744d253f34c87f052d3c72f0ec9&type=Server';
+
+    genBtn.addEventListener('click',()=>{
+      currentKey=randomKey();
+      draw(currentKey);
+      copyGoBtn.disabled=false;
+      genBtn.textContent='Generada ✓';
+    });
+
+    async function copyText(text){
+      try{ await navigator.clipboard.writeText(text); return true; }
+      catch(e){
+        const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+        try{document.execCommand('copy');}catch(e2){} finally{document.body.removeChild(ta)}
+        return true;
+      }
+    }
+
+    // TOAST FUNCTIONALITY
+    function showToast(message, duration = 5000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+      
+      return duration;
+    }
+
+    copyGoBtn.addEventListener('click', async ()=>{
+      if(!currentKey) return;
+      await copyText(currentKey);
+      
+      // Show toast message for 5 seconds
+      const toastDuration = showToast('¡Será dirigido a Roblox para registrarlo!', 5000);
+      
+      // Redirect after toast duration
+      setTimeout(() => {
+        window.location.href = ROBLOX_URL;
+      }, toastDuration);
+    });
+
+    // Keep crisp on resize
+    window.addEventListener('resize',()=>draw(currentKey));
+
+    // SIDEBAR TOGGLE
+    const sidebar=document.getElementById('sidebar');
+    const menuBtn=document.getElementById('menuBtn');
+    menuBtn.addEventListener('click',()=>{
+      const open = sidebar.classList.toggle('open');
+      sidebar.setAttribute('aria-hidden', String(!open));
+    });
+  </script>
+</body>
+</html>
