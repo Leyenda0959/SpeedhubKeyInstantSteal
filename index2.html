@@ -1,11 +1,78 @@
-<div class="loading">
-	<div class="loading-text">
-		<span class="loading-text-words">L</span>
-		<span class="loading-text-words">O</span>
-		<span class="loading-text-words">A</span>
-		<span class="loading-text-words">D</span>
-		<span class="loading-text-words">I</span>
-		<span class="loading-text-words">N</span>
-		<span class="loading-text-words">G</span>
-	</div>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loading Animation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Quattrocento+Sans');
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading-text {
+            text-align: center;
+            font-family: 'Quattrocento Sans', sans-serif;
+            font-size: 40px;
+            color: white;
+        }
+        
+        .loading-text-words {
+            display: inline-block;
+            opacity: 0;
+            animation: loading-animation 1.5s infinite;
+        }
+        
+        .loading-text-words:nth-child(1) { animation-delay: 0.1s; }
+        .loading-text-words:nth-child(2) { animation-delay: 0.2s; }
+        .loading-text-words:nth-child(3) { animation-delay: 0.3s; }
+        .loading-text-words:nth-child(4) { animation-delay: 0.4s; }
+        .loading-text-words:nth-child(5) { animation-delay: 0.5s; }
+        .loading-text-words:nth-child(6) { animation-delay: 0.6s; }
+        .loading-text-words:nth-child(7) { animation-delay: 0.7s; }
+        
+        @keyframes loading-animation {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading">
+        <div class="loading-text">
+            <span class="loading-text-words">L</span>
+            <span class="loading-text-words">O</span>
+            <span class="loading-text-words">A</span>
+            <span class="loading-text-words">D</span>
+            <span class="loading-text-words">I</span>
+            <span class="loading-text-words">N</span>
+            <span class="loading-text-words">G</span>
+        </div>
+    </div>
+
+    <script>
+        // Opcional: Remover el loading después de un tiempo
+        setTimeout(function() {
+            document.querySelector('.loading').style.display = 'none';
+        }, 3000); // 3 segundos
+    </script>
+</body>
+</html>
