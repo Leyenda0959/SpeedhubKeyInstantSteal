@@ -263,21 +263,23 @@
       setTimeout(() => {
         toast.classList.remove('show');
       }, duration);
-      
-      return duration;
     }
 
     copyGoBtn.addEventListener('click', async ()=>{
       if(!currentKey) return;
-      await copyText(currentKey);
       
-      // Show toast message for 5 seconds
-      const toastDuration = showToast('¡Será dirigido a Roblox para registrarlo!', 5000);
+      // Copiar la clave al portapapeles
+      const copied = await copyText(currentKey);
       
-      // Redirect after toast duration
-      setTimeout(() => {
-        window.location.href = ROBLOX_URL;
-      }, toastDuration);
+      if (copied) {
+        // Mostrar el toast
+        showToast('¡Será dirigido a Roblox para registrarlo!', 5000);
+        
+        // Redirigir después de 5 segundos
+        setTimeout(() => {
+          window.location.href = ROBLOX_URL;
+        }, 5000);
+      }
     });
 
     // Keep crisp on resize
