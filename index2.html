@@ -238,22 +238,6 @@
     const copyGoBtn=document.getElementById('copyGo');
     const ROBLOX_URL= 'https://www.roblox.com/share?code=5010f744d253f34c87f052d3c72f0ec9&type=Server';
 
-    genBtn.addEventListener('click',()=>{
-      currentKey=randomKey();
-      draw(currentKey);
-      copyGoBtn.disabled=false;
-      genBtn.textContent='Generada ✓';
-    });
-
-    async function copyText(text){
-      try{ await navigator.clipboard.writeText(text); return true; }
-      catch(e){
-        const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
-        try{document.execCommand('copy');}catch(e2){} finally{document.body.removeChild(ta)}
-        return true;
-      }
-    }
-
     // TOAST FUNCTIONALITY
     function showToast(message, duration = 5000) {
       const toast = document.getElementById('toast');
@@ -265,11 +249,27 @@
       }, duration);
     }
 
+    genBtn.addEventListener('click',()=>{
+      currentKey=randomKey();
+      draw(currentKey);
+      copyGoBtn.disabled=false;
+      genBtn.textContent='Generada ✓';
+      
+      // Mostrar el toast cuando se genera la clave
+      showToast('¡Será dirigido a Roblox para registrarlo!', 5000);
+    });
+
+    async function copyText(text){
+      try{ await navigator.clipboard.writeText(text); return true; }
+      catch(e){
+        const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+        try{document.execCommand('copy');}catch(e2){} finally{document.body.removeChild(ta)}
+        return true;
+      }
+    }
+
     copyGoBtn.addEventListener('click', async ()=>{
       if(!currentKey) return;
-      
-      // Mostrar el toast inmediatamente
-      showToast('¡Será dirigido a Roblox para registrarlo!', 5000);
       
       // Copiar la clave al portapapeles
       await copyText(currentKey);
