@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Free Key - SpeedXhub | Halloween</title>
+  <style>
+    :root{
+      --bg:#090b14; --fg:#f6f7ff; --accent:#ff6a00; --purple:#8a2be2; --glass:rgba(255,255,255,.08); --edge:rgba(255,255,255,.25);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{background:radial-gradient(1200px 600px at 70% 10%, #0f1733 0%, #090b14 55%, #06070d 100%);color:var(--fg);font-family:system-ui,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;overflow:hidden}
+
+    /* --- TOAST --- */
+    .toast {
+      position: fixed;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 16px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+      z-index: 9999;
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
+    .toast.show {
+      top: 20px;
+      opacity: 1;
+    }
+
+    /* (resto del CSS igual que tu archivo original) */
+  </style>
+</head>
+<body>
+  <!-- TOP BAR / HAMBURGER -->
+  <div class="topbar">
+    <button id="menuBtn" class="hamburger" aria-label="Abrir menú">
+      <span></span>
+    </button>
+  </div>
+
+  <!-- BACKGROUND y resto del contenido igual... -->
+
+  <main class="center">
+    <section class="card" role="dialog" aria-labelledby="t">
+      <h1 class="title" id="t">Free Key - SpeedX Hub</h1>
+      <div class="row">
+        <button id="gen" class="btn">Generate Key</button>
+      </div>
+      <div class="key-box">
+        <canvas id="keyCanvas" class="key-canvas" height="64" aria-label="Clave"></canvas>
+        <button id="copyGo" class="btn copy copykey" disabled>COPY KEY</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Contenedor Toast -->
+  <div id="toast" class="toast">Esperando...</div>
+
+  <script>
+    /* --- todo tu script original aquí sin cambios --- */
+    const canvas=document.getElementById('keyCanvas');
+    const ctx=canvas.getContext('2d');
+    let currentKey='';
+
+    function draw(text){
+      const cssW=canvas.clientWidth, cssH=canvas.clientHeight; const dpr=Math.min(2, window.devicePixelRatio||1);
+      canvas.width=cssW*dpr; canvas.height=cssH*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      const grad=ctx.createLinearGradient(0,0,cssW,cssH); grad.addColorStop(0,'rgba(255,255,255,.08)'); grad.addColorStop(1,'rgba(255,255,255,.02)');
+      ctx.fillStyle=grad; ctx.fillRect(0,0,cssW,cssH);
+      ctx.font='800 26px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.shadowColor='rgba(255,106,0,.85)'; ctx.shadowBlur=14; ctx.fillStyle='#ffe9c0';
+      ctx.fillText(text||'— — — —  Presiona "Generate Key"  — — — —', cssW/2, cssH/2);
+    }
+    draw('');
+
+    function randomKey(){
+      const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const b=n=>Array.from({length:n},()=>A[Math.floor(Math.random()*A.length)]).join('');
+      return `${b(4)}-${b(4)}-${b(4)}-${b(4)}`;
+    }
+
+    const genBtn=document.getElementById('gen');
+    const copyGoBtn=document.getElementById('copyGo');
+    const ROBLOX_URL= 'https://www.roblox.com/share?code=5010f744d253f34c87f052d3c72f0ec9&type=Server';
+
+    genBtn.addEventListener('click',()=>{
+      currentKey=randomKey();
+      draw(currentKey);
+      copyGoBtn.disabled=false;
+      genBtn.textContent='Generada ✓';
+    });
+
+    async function copyText(text){
+      try{ await navigator.clipboard.writeText(text); return true; }
+      catch(e){
+        const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+        try{document.execCommand('copy');}catch(e2){} finally{document.body.removeChild(ta)}
+        return true;
+      }
+    }
+
+    // NUEVA FUNCIÓN TOAST
+    function showToast(msg, duration=5000){
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'), duration);
+    }
+
+    // Modificación del botón COPY KEY
+    copyGoBtn.addEventListener('click', async ()=>{
+      if(!currentKey) return;
+      await copyText(currentKey);
+      showToast('Esperando...');
+      setTimeout(()=>{
+        window.location.href = ROBLOX_URL;
+      }, 5000);
+    });
+
+    window.addEventListener('resize',()=>draw(currentKey));
+
+    // Sidebar toggle
+    const sidebar=document.getElementById('sidebar');
+    const menuBtn=document.getElementById('menuBtn');
+    menuBtn.addEventListener('click',()=>{
+      const open = sidebar.classList.toggle('open');
+      sidebar.setAttribute('aria-hidden', String(!open));
+    });
+  </script>
+</body>
+</html>
