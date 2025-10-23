@@ -54,8 +54,8 @@
 
   <div class="wrap">
     <div class="panel" role="region" aria-label="Acciones">
-      <button class="btn btn-moreira" id="btn-moreira">Metodo Moreira</button>
-      <button class="btn btn-script" id="btn-script">Script Meowl Update</button>
+      <button class="btn btn-moreira" id="btn-moreira">Soon</button>
+      <button class="btn btn-script" id="btn-script">Key Meowl Update</button>
     </div>
   </div>
 
@@ -70,11 +70,11 @@
     </div>
   </div>
 
-  <div class="toast" id="toast" role="status" aria-live="assertive">Script copiado al portapapeles!</div>
+  <div class="toast" id="toast" role="status" aria-live="assertive">Key copiado al portapapeles 1 semana!</div>
 
   <script>
     (function(){
-      const SCRIPT = 'loadstring(game:HttpGet("https://meowl-stealabrainrot-script-upd.netlify.app/MeowlUpdatedMiranda.lua"))()';
+      const SCRIPT = '002288';
       const moreira = document.getElementById('btn-moreira');
       const btnScript = document.getElementById('btn-script');
       const toast = document.getElementById('toast');
@@ -98,7 +98,7 @@
         try{
           if (navigator.clipboard && window.isSecureContext){
             await navigator.clipboard.writeText(SCRIPT);
-            showToast('Script copiado al portapapeles!');
+            showToast('Key copiado al portapapeles!');
           } else {
             // Fallback silencioso a selección manual
             openModal();
